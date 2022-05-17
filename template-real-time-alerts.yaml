@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AWS
+
+  Sample SAM Template for AWS
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 900
+Resources:
+  realTimeAlerts:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: real-time-alerts/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Role: arn:aws:iam::443793523615:role/lambda_talk_to_rds_ses
+      Environment:
+        Variables:
+          DB_NAME: db-customer
+          DB_PASS: CLANZ1q2w3e4r!
+          DB_PORT: 6432
+          DB_SERVICE: 172.31.1.116
+          DB_USER: app_admin
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: arn:aws:sqs:eu-west-1:443793523615:prod-cl_occurrence-id_for_real-time-alerts-lambda
+            BatchSize: 1
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0a78cc4a8a8497377
+        SubnetIds:
+          - subnet-0cf3627f1d63b5e12
+          - subnet-04e587525bea5efea
+          - subnet-0968942758c00dbe1
